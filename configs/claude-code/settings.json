@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "NODE_ENV": "development",
+    "AZURE_DEVOPS_PAT": ""
+  },
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(echo:*)",
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(diff:*)",
+      "Bash(dirname:*)",
+      "Bash(basename:*)",
+      "Bash(realpath:*)",
+      "Bash(stat:*)",
+      "Bash(file:*)",
+      "Bash(tree:*)",
+      "Bash(pwd)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(sed:*)",
+      "Bash(awk:*)",
+      "Bash(cut:*)",
+      "Bash(tr:*)",
+      "Bash(xargs:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git switch:*)",
+      "Bash(git stash:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(git merge:*)",
+      "Bash(git rebase:*)",
+      "Bash(git cherry-pick:*)",
+      "Bash(git blame:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git remote:*)",
+      "Bash(git tag:*)",
+      "Bash(git config:*)",
+      "Bash(git ls-files:*)",
+      "Bash(git clean:*)",
+      "Bash(git restore:*)",
+      "Bash(git reset:*)",
+      "Bash(node:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(tsc:*)",
+      "Bash(tsx:*)",
+      "Bash(pnpm:*)",
+      "Bash(yarn:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(pip:*)",
+      "Bash(pip3:*)",
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+      "Bash(docker compose:*)",
+      "Bash(jq:*)",
+      "Bash(curl:*)",
+      "Bash(which:*)",
+      "Bash(env:*)",
+      "Bash(printenv:*)",
+      "Bash(date:*)",
+      "Bash(whoami)",
+      "Bash(uname:*)",
+      "Bash(lsof:*)",
+      "Bash(ps:*)",
+      "Bash(kill:*)",
+      "Bash(pkill:*)",
+      "Bash(chmod:*)",
+      "Bash(chown:*)",
+      "Bash(ln:*)",
+      "Bash(tar:*)",
+      "Bash(unzip:*)",
+      "Bash(gzip:*)",
+      "Bash(gunzip:*)",
+      "mcp__*",
+      "Bash(ffprobe -v error -show_entries format=duration,bit_rate -show_entries stream=codec_name,sample_rate,bit_rate -of default=noprint_wrappers=1 \"/Volumes/Music/01_Library/Melodic Techno/Chris Hunter - Haunted \\(Intro Mix\\).mp3\")"
+    ],
+    "deny": [
+      "Bash(npm publish:*)",
+      "Bash(yarn publish:*)",
+      "Bash(npm run sls:deploy:prod)",
+      "Bash(sls deploy --stage production)",
+      "Bash(sls remove:*)",
+      "Bash(rm -rf:*)",
+      "Bash(rm -r:*)",
+      "Bash(wget:*)",
+      "Bash(sudo:*)",
+      "Bash(su:*)",
+      "Bash(shutdown:*)",
+      "Bash(reboot:*)",
+      "Bash(systemctl:*)",
+      "Bash(service:*)",
+      "Bash(chmod 777:*)",
+      "Bash(chmod -R:*)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Edit(.env)",
+      "Edit(.env.*)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)"
+    ],
+    "ask": [
+      "Bash(git merge:*)",
+      "Bash(git rebase:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(rm:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_input.filePath // empty' 2>/dev/null | { read f; if [ -n \"$f\" ] && echo \"$f\" | grep -qE '\\.(ts|tsx|js|jsx|json|css|md)$'; then npx prettier --write \"$f\" 2>/dev/null; fi; }",
+            "timeout": 15
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_input.filePath // empty' 2>/dev/null | { read f; if [ -n \"$f\" ] && echo \"$f\" | grep -qE '\\.(ts|tsx)$'; then npx tsc --noEmit --pretty 2>&1 | head -30; fi; }",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_input.filePath // empty' 2>/dev/null | { read f; if [ -n \"$f\" ] && echo \"$f\" | grep -qE '(node_modules/|\\.next/|\\.git/|dist/|build/)'; then echo 'BLOCKED: Protected directory' >&2; exit 2; fi; exit 0; }"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Frog•aiff"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Glass.aiff"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "teammateMode": "in-process"
+}

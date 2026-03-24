@@ -1,0 +1,58 @@
+# Secrets — NEVER commit
+.env
+.env.*
+!.env.example
+secrets/
+*.key
+*.pem
+*.p12
+*credentials*
+*token*
+
+# API keys patterns
+*api_key*
+*apikey*
+*secret*
+
+# OpenClaw runtime
+agents/*/sessions/
+agents/*/memory/*.jsonl
+*.jsonl
+*.db
+*.db-shm
+*.db-wal
+
+# Node
+node_modules/
+package-lock.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build
+dist/
+build/
+*.tgz
+
+# Data files (too large or ephemeral)
+skills/*/data/*.db
+skills/*/data/*.json
+!skills/*/data/.gitkeep
+TACO.json
+
+# Logs
+logs/
+*.log

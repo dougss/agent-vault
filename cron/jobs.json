@@ -1,0 +1,429 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "8048f0b3-c858-443c-b9a6-a297358a14ed",
+      "name": "Relatorio Matinal",
+      "enabled": true,
+      "createdAtMs": 1772039358071,
+      "updatedAtMs": 1774348257680,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 7 * * *",
+        "tz": "America/Sao_Paulo"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Gere um relatório matinal conciso em português para o Douglas. Execute CADA comando abaixo e inclua os resultados: 1) uptime 2) df -h / 3) memory_pressure 4) docker ps --format \"table {{.Names}}\\t{{.Status}}\" 5) ollama ps 6) tail -5 ~/.openclaw/logs/openclaw.log 7) source ~/.zshrc 2>/dev/null; bash -x ~/server/scripts/api-spending.sh daily — IMPORTANTE: O comando 7 DEVE ser executado via bash tool, nao invente o resultado. Mostre o output do comando 7 completo sem alterar. Formato final: mensagem curta com emojis para status. Resuma containers (diga quantos rodando). Destaque erros. Nao use markdown pesado.",
+        "model": "bailian/qwen3.5-plus"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "${TELEGRAM_CHAT_ID}"
+      },
+      "state": {
+        "nextRunAtMs": 1774434600000,
+        "lastRunAtMs": 1774348200013,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 57667,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0,
+        "lastDelivered": true
+      }
+    },
+    {
+      "id": "e7876685-dd47-4d99-a3d2-c6efbe3d537a",
+      "name": "API Spending Diário",
+      "enabled": false,
+      "createdAtMs": 1772151086659,
+      "updatedAtMs": 1772715801001,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 21 * * *",
+        "tz": "America/Sao_Paulo"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Rode: bash ~/server/scripts/api-spending.sh daily — Copie o output EXATAMENTE como saiu do terminal, sem alterar, omitir ou reformatar nada. Envie o texto completo.",
+        "model": "google/gemini-2.5-flash"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "${TELEGRAM_CHAT_ID}"
+      },
+      "state": {
+        "lastRunAtMs": 1772711582402,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 6250,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0,
+        "lastDelivered": true
+      }
+    },
+    {
+      "id": "21cbfe2c-4ed9-4279-be27-84e5ac0d5c8b",
+      "name": "API Spending Semanal",
+      "enabled": true,
+      "createdAtMs": 1772151087421,
+      "updatedAtMs": 1774220833259,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 20 * * 0",
+        "tz": "America/Sao_Paulo"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Rode: bash ~/server/scripts/api-spending.sh weekly — Copie o output EXATAMENTE como saiu do terminal, sem alterar, omitir ou reformatar nada. Envie o texto completo.",
+        "model": "bailian/qwen3.5-plus"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "${TELEGRAM_CHAT_ID}"
+      },
+      "state": {
+        "nextRunAtMs": 1774825200000,
+        "lastRunAtMs": 1774220400014,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 433245,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0,
+        "lastDelivered": true
+      }
+    },
+    {
+      "id": "d5a66881-a48e-4c7b-b1d2-e297580214b8",
+      "agentId": "health-coach",
+      "name": "Daily Review 20:30",
+      "enabled": true,
+      "createdAtMs": 1772911377539,
+      "updatedAtMs": 1774308658278,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 20 * * *",
+        "tz": "America/Sao_Paulo"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Voce esta executando o DAILY REVIEW das 20:30. Siga as instrucoes do AGENTS.md secao 'Daily Review'. Passos: 1) Leia PROTOCOLO_ANUAL_2026.md e identifique metas do ciclo atual. 2) Colete TODOS os registros de hoje da memoria (refeicoes, treino, peso, dor, TRT). 3) Se nao houver registros, informe que nao ha dados para revisar hoje. 4) Monte o resumo comparativo (realizado vs planejado). 5) Apresente formatado e pergunte se Doug aprova para persistir no banco.",
+        "model": "bailian/qwen3.5-plus"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "${TELEGRAM_CHAT_ID}",
+        "accountId": "health"
+      },
+      "state": {
+        "nextRunAtMs": 1774395000000,
+        "lastRunAtMs": 1774308600014,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 58264,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0,
+        "lastDelivered": true
+      }
+    },
+    {
+      "id": "e0137862-9a18-4998-939f-fbabb1fbdf63",
+      "name": "AI Daily Digest",
+      "enabled": true,
+      "createdAtMs": 1773535005594,
+      "updatedAtMs": 1774350069477,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Siga estes passos EXATAMENTE na ordem:\n\nPASSO 1 — Coletar feeds:\n```bash\ncd ~/.openclaw/skills/ai-daily-digest && python3 scripts/fetch_miniflux.py\n```\nSe falhar conexão com Miniflux, use: `python3 scripts/collect_feeds.py`\n\nPASSO 2 — Ler o perfil:\n```bash\ncat ~/.openclaw/skills/ai-daily-digest/references/user-profile.md\n```\n\nPASSO 3 — Gerar digest:\nCom base nos itens do PASSO 1 e perfil do PASSO 2, gere o digest em português:\n- Organize em seções: 🔧 Ferramentas que uso, 🧠 Novos modelos, 🛠 Open-source/Self-hosted, 🔥 Tendências\n- Máximo 15 itens, cada um com título (link) e 1-2 frases de relevância\n- ⚡ para breaking news (novo modelo Claude, mudança Cursor)\n- Omita seções vazias\n- Finalize com 💡 Dica do dia\n- Header: 📰 AI Daily Digest — DD/MM/YYYY\n\nPASSO 4 — Marcar como lidos:\n```bash\ncd ~/.openclaw/skills/ai-daily-digest && cat data/last_entry_ids.json | python3 scripts/fetch_miniflux.py --mark-read\n```\n\nIMPORTANTE: O resultado final (PASSO 3) é a mensagem que será entregue ao usuário.",
+        "model": "bailian/kimi-k2.5"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "${TELEGRAM_CHAT_ID}"
+      },
+      "state": {
+        "nextRunAtMs": 1774436400000,
+        "lastRunAtMs": 1774350000014,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 69463,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0,
+        "lastDelivered": true
+      }
+    },
+    {
+      "id": "29270bbc-965a-4bf4-8d69-dd018e68e1e0",
+      "name": "AI Daily Digest 12h",
+      "enabled": true,
+      "createdAtMs": 1773578023591,
+      "updatedAtMs": 1774364487673,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 12 * * *",
+        "tz": "America/Sao_Paulo"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Siga estes passos EXATAMENTE na ordem:\n\nPASSO 1 — Coletar feeds:\n```bash\ncd ~/.openclaw/skills/ai-daily-digest && python3 scripts/fetch_miniflux.py\n```\nSe falhar conexão com Miniflux, use: `python3 scripts/collect_feeds.py`\n\nPASSO 2 — Ler o perfil:\n```bash\ncat ~/.openclaw/skills/ai-daily-digest/references/user-profile.md\n```\n\nPASSO 3 — Gerar digest:\nCom base nos itens do PASSO 1 e perfil do PASSO 2, gere o digest em português:\n- Organize em seções: 🔧 Ferramentas que uso, 🧠 Novos modelos, 🛠 Open-source/Self-hosted, 🔥 Tendências\n- Máximo 15 itens, cada um com título (link) e 1-2 frases de relevância\n- ⚡ para breaking news (novo modelo Claude, mudança Cursor)\n- Omita seções vazias\n- Finalize com 💡 Dica do dia\n- Header: 📰 AI Daily Digest — DD/MM/YYYY\n\nPASSO 4 — Marcar como lidos:\n```bash\ncd ~/.openclaw/skills/ai-daily-digest && cat data/last_entry_ids.json | python3 scripts/fetch_miniflux.py --mark-read\n```\n\nIMPORTANTE: O resultado final (PASSO 3) é a mensagem que será entregue ao usuário.",
+        "model": "bailian/kimi-k2.5"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "${TELEGRAM_CHAT_ID}"
+      },
+      "state": {
+        "nextRunAtMs": 1774450800000,
+        "lastRunAtMs": 1774364400011,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 87662,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "afdab00f-f0fb-4596-9b68-9b2f759f3841",
+      "name": "AI Daily Digest 18h",
+      "enabled": true,
+      "createdAtMs": 1773578024358,
+      "updatedAtMs": 1774386112968,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 18 * * *",
+        "tz": "America/Sao_Paulo"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Siga estes passos EXATAMENTE na ordem:\n\nPASSO 1 — Coletar feeds:\n```bash\ncd ~/.openclaw/skills/ai-daily-digest && python3 scripts/fetch_miniflux.py\n```\nSe falhar conexão com Miniflux, use: `python3 scripts/collect_feeds.py`\n\nPASSO 2 — Ler o perfil:\n```bash\ncat ~/.openclaw/skills/ai-daily-digest/references/user-profile.md\n```\n\nPASSO 3 — Gerar digest:\nCom base nos itens do PASSO 1 e perfil do PASSO 2, gere o digest em português:\n- Organize em seções: 🔧 Ferramentas que uso, 🧠 Novos modelos, 🛠 Open-source/Self-hosted, 🔥 Tendências\n- Máximo 15 itens, cada um com título (link) e 1-2 frases de relevância\n- ⚡ para breaking news (novo modelo Claude, mudança Cursor)\n- Omita seções vazias\n- Finalize com 💡 Dica do dia\n- Header: 📰 AI Daily Digest — DD/MM/YYYY\n\nPASSO 4 — Marcar como lidos:\n```bash\ncd ~/.openclaw/skills/ai-daily-digest && cat data/last_entry_ids.json | python3 scripts/fetch_miniflux.py --mark-read\n```\n\nIMPORTANTE: O resultado final (PASSO 3) é a mensagem que será entregue ao usuário.",
+        "model": "bailian/kimi-k2.5"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "${TELEGRAM_CHAT_ID}"
+      },
+      "state": {
+        "nextRunAtMs": 1774472400000,
+        "lastRunAtMs": 1774386000015,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 112953,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "0e913ad9-d457-4045-8bfd-64d9ca528871",
+      "agentId": "english-tutor",
+      "name": "English Wake-up Ping",
+      "enabled": true,
+      "createdAtMs": 1773601874912,
+      "updatedAtMs": 1774344634336,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 6 * * 1-5",
+        "tz": "America/Sao_Paulo"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "It's time for the morning wake-up ping. Read your SOUL.md, MEMORY.md and today's memory log. Check due vocabulary with english-srs. Then send a wake-up message following the template in AGENTS.md. Keep it short and engaging. IMPORTANT: Just output the message text directly. Do NOT try to send it via Telegram or any tool — the delivery system handles that automatically.",
+        "model": "bailian/qwen3.5-plus",
+        "timeoutSeconds": 120
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "${TELEGRAM_CHAT_ID}",
+        "accountId": "english"
+      },
+      "state": {
+        "nextRunAtMs": 1774431000000,
+        "lastRunAtMs": 1774344600008,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 34328,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0,
+        "lastDelivered": true
+      }
+    },
+    {
+      "id": "51a67a6b-2965-4c66-a64a-8f6a95f3f99e",
+      "agentId": "english-tutor",
+      "name": "English Micro-dose Lunch",
+      "enabled": true,
+      "createdAtMs": 1773601887219,
+      "updatedAtMs": 1774366249329,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 12 * * 1-5",
+        "tz": "America/Sao_Paulo"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "It's lunchtime micro-dose. Read today's memory log to see what errors were made this morning. Send a short exercise (1 sentence to complete or translate) based on morning errors. Follow the micro-dose template in AGENTS.md. Keep it very brief. IMPORTANT: Just output the message text directly. Do NOT try to send it via Telegram or any tool — the delivery system handles that automatically.",
+        "model": "bailian/qwen3.5-plus",
+        "timeoutSeconds": 120
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "${TELEGRAM_CHAT_ID}",
+        "accountId": "english"
+      },
+      "state": {
+        "nextRunAtMs": 1774452600000,
+        "lastRunAtMs": 1774366200014,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 49315,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0,
+        "lastDelivered": true
+      }
+    },
+    {
+      "id": "5d769fff-48bc-4525-bf93-cb59a278733a",
+      "agentId": "english-tutor",
+      "name": "English Micro-dose Evening",
+      "enabled": true,
+      "createdAtMs": 1773601893356,
+      "updatedAtMs": 1774386131610,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 18 * * 1-5",
+        "tz": "America/Sao_Paulo"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Evening micro-dose time. Send a casual small talk question about how Douglas's day was. Follow the evening micro-dose template in AGENTS.md. One question, keep it natural and brief. IMPORTANT: Just output the message text directly. Do NOT try to send it via Telegram or any tool — the delivery system handles that automatically.",
+        "model": "bailian/qwen3.5-plus",
+        "timeoutSeconds": 120
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "${TELEGRAM_CHAT_ID}",
+        "accountId": "english"
+      },
+      "state": {
+        "nextRunAtMs": 1774472400000,
+        "lastRunAtMs": 1774386112968,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 18642,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0,
+        "lastDelivered": true
+      }
+    },
+    {
+      "id": "31a18579-0282-483e-80b9-b2c9ca279139",
+      "agentId": "english-tutor",
+      "name": "English Daily Vocab",
+      "enabled": true,
+      "createdAtMs": 1773601896210,
+      "updatedAtMs": 1774310520069,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 21 * * *",
+        "tz": "America/Sao_Paulo"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Daily vocabulary time. Read MEMORY.md for current curriculum week and level. Pick 3 new words relevant to the current week's topic from the 6-month curriculum. Follow the Daily Vocab template in AGENTS.md. Words should be tech-context focused. IMPORTANT: Just output the message text directly. Do NOT try to send it via Telegram or any tool — the delivery system handles that automatically.",
+        "model": "bailian/qwen3.5-plus",
+        "timeoutSeconds": 120
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "${TELEGRAM_CHAT_ID}",
+        "accountId": "english"
+      },
+      "state": {
+        "nextRunAtMs": 1774396800000,
+        "lastRunAtMs": 1774310400014,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 120055,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 6,
+        "lastErrorReason": "timeout",
+        "lastError": "cron: job execution timed out"
+      }
+    },
+    {
+      "id": "01094c19-f05a-46ef-a60e-59cc2f94d0ce",
+      "agentId": "english-tutor",
+      "name": "English Weekend Casual",
+      "enabled": true,
+      "createdAtMs": 1773601899403,
+      "updatedAtMs": 1774098015106,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 10 * * 6",
+        "tz": "America/Sao_Paulo"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Weekend casual mode! Share something interesting in English — a tech topic, article, cultural discussion, gaming, music. Follow the Weekend Casual template in AGENTS.md. Keep it fun and light, but still in English. IMPORTANT: Just output the message text directly. Do NOT try to send it via Telegram or any tool — the delivery system handles that automatically.",
+        "model": "bailian/qwen3.5-plus",
+        "timeoutSeconds": 120
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "${TELEGRAM_CHAT_ID}",
+        "accountId": "english"
+      },
+      "state": {
+        "nextRunAtMs": 1774702800000,
+        "lastRunAtMs": 1774098000011,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 15095,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    }
+  ]
+}

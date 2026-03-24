@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sudo scutil:*)",
+      "Bash(systemsetup:*)",
+      "Bash(ipconfig getifaddr:*)",
+      "Bash(head:*)",
+      "Bash(grep inet :*)",
+      "Bash(launchctl list)",
+      "Bash(launchctl list:*)",
+      "Bash(docker:*)",
+      "Bash(openssl rand:*)",
+      "Bash(echo === Nginx ===:*)",
+      "Bash(cat:*)",
+      "Bash(sudo:*)",
+      "Bash(chmod +x:*)",
+      "Bash(crontab:*)",
+      "Bash(echo:*)",
+      "Bash(~/server/scripts/deploy.sh:*)",
+      "Bash(~/server/scripts/status.sh:*)",
+      "Bash(~/server/scripts/backup.sh:*)",
+      "Bash(/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate)",
+      "Bash(echo \"=== SCRIPTS ===\" && ls -la ~/server/scripts/*.sh 2>&1 && echo \"\" && echo \"=== CRONTAB ===\" && crontab -l 2>&1)",
+      "Bash(awk:*)",
+      "Bash(ssh:*)",
+      "Bash(grep:*)",
+      "mcp__claude_ai_Context7__resolve-library-id",
+      "Bash(python3:*)",
+      "Bash(openclaw config:*)",
+      "Bash(DASHSCOPE_API_KEY=\"${DASHSCOPE_API_KEY}\" uv run:*)",
+      "Bash(DASHSCOPE_API_KEY=\"${DASHSCOPE_API_KEY}\" curl:*)",
+      "WebSearch",
+      "WebFetch(domain:www.alibabacloud.com)",
+      "Bash(curl:*)",
+      "Bash(DASHSCOPE_API_KEY=\"${API_SECRET_KEY}\" uv run:*)",
+      "Bash(openclaw gateway:*)"
+    ]
+  }
+}
