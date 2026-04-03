@@ -72,9 +72,12 @@ fi
 # Cleanup
 rm -f "$LOCK_FILE"
 
+# Update status (v2 or v1)
 if [[ -f "$PRD_PATH" ]]; then
   update_prd_status "$PRD_PATH" "stopped"
 fi
+# Also kill any child claude processes
+pkill -P "$PID" 2>/dev/null || true
 
 if [[ -f "$PROGRESS_FILE" ]]; then
   echo "[$(date -Iseconds)] ⏹️ Harness parado manualmente" >> "$PROGRESS_FILE"

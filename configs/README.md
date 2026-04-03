@@ -17,3 +17,7 @@ Configuracoes de ferramentas de IA, sanitizadas e prontas para adaptar.
 Configuracoes de referencia do OpenClaw. A config real (`openclaw.json`) contem API keys e NAO e versionada. Use `.env.example` como guia.
 
 **Keys validas:** ver lista em `server-CLAUDE.md` secao "Config keys validas".
+
+## OpenClaw (`openclaw/`)
+
+- [README.md](openclaw/README.md) — referência de chaves (`openclaw config`), sem segredos.

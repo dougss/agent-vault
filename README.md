@@ -45,7 +45,7 @@ cp .env.example .env
 ./scripts/utilities/install.sh hooks
 
 # 4. Instalar assets em uma ferramenta
-./scripts/utilities/install.sh openclaw      # Instala agentes e skills
+./scripts/utilities/install.sh openclaw      # Copia *.md dos agentes (skills via migrate)
 ./scripts/utilities/install.sh claude-code   # Instala configs do Claude Code
 ./scripts/utilities/install.sh harness       # Instala harness scripts
 
@@ -53,9 +53,16 @@ cp .env.example .env
 ./scripts/utilities/validate.sh
 ```
 
+## Fluxo: migrate vs install
+
+- **`migrate.sh`** (na máquina onde o OpenClaw está instalado): copia de `~/.openclaw` para este repositório, com sanitização. Use para **atualizar o vault** com o que está no disco.
+- **`install.sh openclaw`**: copia apenas os **Markdown dos agentes** para `~/.openclaw/workspace` e `workspaces/<id>/`. Skills completas entram no vault pelo migrate, não por este install.
+- **Harness v3**: app canônico em `~/server/apps/harness`; `scripts/harness/` aqui espelha os wrappers do servidor.
+- **Nexus** (`~/server/apps/nexus`): skills de processo (MCP / Claude Code), separadas das skills OpenClaw.
+
 ## Agentes
 
-12 agentes com personalidades e instrucoes proprias:
+13 agentes com personalidades e instrucoes proprias:
 
 | Agente                  | Funcao                                            | Tags                        |
 | ----------------------- | ------------------------------------------------- | --------------------------- |
@@ -71,6 +78,7 @@ cp .env.example .env
 | **Video Producer**      | Producao de video                                 | `personal`, `media`         |
 | **Task Manager**        | Decomposicao de tarefas complexas                 | `personal`, `orchestration` |
 | **Harness Engineer**    | Implementacao autonoma via Slack                  | `automation`, `engineering` |
+| **TikTok Coach** (Liz)  | TikTok Shop, metricas, planos                     | `personal`, `commerce`        |
 
 Cada agente tem:
 
@@ -82,7 +90,7 @@ Cada agente tem:
 
 ## Skills
 
-27 skills organizados por dominio. Cada skill contem:
+30+ skills organizados por dominio. Cada skill contem:
 
 - `SKILL.md` — Descricao, triggers, instrucoes
 - `scripts/` — Scripts executaveis (Python, bash)

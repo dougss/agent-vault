@@ -77,9 +77,9 @@ gate1() {
   return 0
 }
 
-# ===== GATE 2: LLM bug/security detection (structured output) =====
+# ===== GATE 2: LLM bug/security/spec compliance detection =====
 gate2() {
-  log_info "Gate 2: LLM bug & security scan..."
+  log_info "Gate 2: LLM bug, security & spec compliance scan..."
 
   # Get diff (limited to code files, max 800 lines)
   local diff_file="$REVIEW_DIR/pr-diff.txt"
@@ -91,8 +91,20 @@ gate2() {
 
   if [[ "$diff_lines" -lt 5 ]]; then
     log_ok "Gate 2 skipped: diff too small ($diff_lines lines)"
-    echo '{"bugs":[],"security":[]}' > "$REVIEW_DIR/gate2-result.json"
+    echo '{"bugs":[],"security":[],"spec_issues":[]}' > "$REVIEW_DIR/gate2-result.json"
     return 0
+  fi
+
+  # Find spec for context (v2)
+  local spec_context=""
+  if [[ -f "$PROJECT_DIR/.harness/spec-dir" ]]; then
+    local spec_dir
+    spec_dir=$(cat "$PROJECT_DIR/.harness/spec-dir")
+    if [[ -f "$spec_dir/spec.md" ]]; then
+      spec_context="
+SPEC (source of truth — check compliance):
+$(head -100 "$spec_dir/spec.md")"
+    fi
   fi
 
   local review_prompt="You are a code reviewer. Analyze this diff and find ONLY:
@@ -101,6 +113,8 @@ gate2() {
    incorrect API usage, broken imports, wrong types that will cause runtime errors)
 2. SECURITY — exposed secrets, XSS vectors, SQL injection, hardcoded credentials,
    URLs with tokens in query strings
+3. SPEC COMPLIANCE — missing requirements, extra unneeded work, misunderstandings
+   (only if spec is provided below)
 
 DO NOT report:
 - Style preferences, naming conventions, formatting
@@ -111,10 +125,11 @@ DO NOT report:
 - Anything that tsc/eslint/vitest would already catch
 
 Return ONLY valid JSON (no markdown, no explanation, no code fences):
-{\"bugs\": [{\"file\": \"path\", \"line\": N, \"description\": \"what breaks\"}], \"security\": [{\"file\": \"path\", \"description\": \"what is exposed\"}]}
+{\"bugs\": [{\"file\": \"path\", \"line\": N, \"description\": \"what breaks\"}], \"security\": [{\"file\": \"path\", \"description\": \"what is exposed\"}], \"spec_issues\": [{\"requirement\": \"what spec says\", \"actual\": \"what code does\"}]}
 
-If there are NO bugs and NO security issues, return exactly:
-{\"bugs\": [], \"security\": []}
+If there are NO issues, return exactly:
+{\"bugs\": [], \"security\": [], \"spec_issues\": []}
+$spec_context
 
 DIFF:
 $(cat "$diff_file")"
@@ -141,20 +156,21 @@ $(cat "$diff_file")"
   # If still invalid JSON, treat as clean (no issues found)
   if ! jq '.' "$result_file" > /dev/null 2>&1; then
     log_warn "Gate 2: Could not parse LLM response as JSON, treating as clean"
-    echo '{"bugs":[],"security":[]}' > "$result_file"
+    echo '{"bugs":[],"security":[],"spec_issues":[]}' > "$result_file"
     return 0
   fi
 
-  local bug_count security_count
+  local bug_count security_count spec_count
   bug_count=$(jq '.bugs | length' "$result_file")
   security_count=$(jq '.security | length' "$result_file")
+  spec_count=$(jq '.spec_issues | length // 0' "$result_file" 2>/dev/null || echo 0)
 
-  if [[ "$bug_count" -eq 0 && "$security_count" -eq 0 ]]; then
-    log_ok "Gate 2 passed: no bugs or security issues"
+  if [[ "$bug_count" -eq 0 && "$security_count" -eq 0 && "$spec_count" -eq 0 ]]; then
+    log_ok "Gate 2 passed: no bugs, security, or spec issues"
     return 0
   fi
 
-  log_warn "Gate 2 found issues: $bug_count bugs, $security_count security"
+  log_warn "Gate 2 found: $bug_count bugs, $security_count security, $spec_count spec issues"
   return 1
 }
 

@@ -1,184 +1,184 @@
 #!/usr/bin/env bash
-# Generate prd.json for a project using Claude Code
-# Usage: harness-plan.sh <project> "<description>"
-# Exit codes: 0=success, 1=prereq, 2=claude fail, 3=schema fail
+# Generate specs for a feature with research + approval gate
+# v2.1: Deep research → spec generation → Telegram approval gate
+# Usage: harness-plan.sh <project> "<description>" [--auto-approve] [--skip-research]
+# Exit codes: 0=success, 1=prereq, 2=claude fail, 3=validation fail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/lib/common.sh"
+load_secrets
 
 if [[ $# -lt 2 ]]; then
-  log_error "Usage: harness-plan.sh <project> \"<description>\""
+  log_error "Usage: harness-plan.sh <project> \"<description>\" [--auto-approve] [--skip-research]"
   exit $EXIT_PREREQ
 fi
 
 PROJECT="$1"
 DESCRIPTION="$2"
+shift 2
+
+AUTO_APPROVE=false
+EXTRA_FLAGS=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --auto-approve) AUTO_APPROVE=true; shift ;;
+    --skip-research) EXTRA_FLAGS="$EXTRA_FLAGS --skip-research"; shift ;;
+    *) shift ;;
+  esac
+done
+
 PROJECT_DIR=$(validate_project "$PROJECT")
-ISSUE_NUMBER=""
-ISSUE_CONTEXT=""
+NOTIFY_CHANNEL="${HARNESS_NOTIFY_CHANNEL:-telegram}"
+APPROVAL_TIMEOUT="${HARNESS_APPROVAL_TIMEOUT:-3600}"  # 1 hour default
 
-# Detect GitHub Issue reference in description (e.g., "issue #14" or just "#14")
+notify() {
+  "$SCRIPT_DIR/harness-notify.sh" --channel "$NOTIFY_CHANNEL" "$1" 2>/dev/null || true
+}
+
+# Detect issue
+ISSUE_FLAG=""
 if echo "$DESCRIPTION" | grep -qE '(issue\s*)?#[0-9]+'; then
-  ISSUE_NUMBER=$(echo "$DESCRIPTION" | grep -oE '#[0-9]+' | head -1 | tr -d '#')
+  ISSUE_NUMBER=$(echo "$DESCRIPTION" | grep -oE '#[0-9]+' | head -1 | tr -d '#' || true)
+  ISSUE_FLAG="--issue $ISSUE_NUMBER"
   log_info "Detected GitHub Issue #$ISSUE_NUMBER"
-
-  # Try project repo first, then server-ops
-  REPO_NAME=$(jq -r '.name // empty' "$PROJECT_DIR/package.json" 2>/dev/null)
-  ISSUE_BODY=$(gh issue view "$ISSUE_NUMBER" --repo "dougss/$PROJECT" --json title,body -q '"\(.title)\n\n\(.body)"' 2>/dev/null)
-  if [[ -z "$ISSUE_BODY" ]]; then
-    ISSUE_BODY=$(gh issue view "$ISSUE_NUMBER" --repo "dougss/server-ops" --json title,body -q '"\(.title)\n\n\(.body)"' 2>/dev/null)
-  fi
-
-  if [[ -n "$ISSUE_BODY" ]]; then
-    ISSUE_CONTEXT="
-
-GitHub Issue #$ISSUE_NUMBER context:
-$ISSUE_BODY"
-    log_ok "Issue #$ISSUE_NUMBER loaded as context"
-  else
-    log_warn "Could not fetch issue #$ISSUE_NUMBER"
-  fi
 fi
 
 # Health checks
-command -v claude > /dev/null 2>&1 || { log_error "claude not found in PATH"; exit $EXIT_PREREQ; }
-command -v gh > /dev/null 2>&1 || { log_error "gh not found in PATH"; exit $EXIT_PREREQ; }
-command -v gtimeout > /dev/null 2>&1 || { log_error "gtimeout not found (brew install coreutils)"; exit $EXIT_PREREQ; }
-gh auth status > /dev/null 2>&1 || { log_error "gh not authenticated (run: gh auth login)"; exit $EXIT_PREREQ; }
+command -v claude > /dev/null 2>&1 || { log_error "claude not found"; exit $EXIT_PREREQ; }
+command -v gh > /dev/null 2>&1 || { log_error "gh not found"; exit $EXIT_PREREQ; }
+gh auth status > /dev/null 2>&1 || { log_error "gh not authenticated"; exit $EXIT_PREREQ; }
+mkdir -p "$LOGS_DIR"
 
-# Check remote push access
+# Check remote push access (non-fatal)
 if ! git -C "$PROJECT_DIR" ls-remote --exit-code origin > /dev/null 2>&1; then
   log_warn "Cannot reach git remote — push may fail later"
 fi
 
-# Ensure logs dir
-mkdir -p "$LOGS_DIR"
-if [[ ! -w "$LOGS_DIR" ]]; then
-  log_error "Logs directory not writable: $LOGS_DIR"
-  exit $EXIT_PREREQ
-fi
-
-# Copy templates to .harness/ (don't overwrite project CLAUDE.md)
+# Setup .harness/
 mkdir -p "$PROJECT_DIR/.harness"
 cp -n "$SCRIPT_DIR/templates/CLAUDE.md" "$PROJECT_DIR/.harness/CLAUDE.md" 2>/dev/null || true
 cp -n "$SCRIPT_DIR/templates/AGENTS.md" "$PROJECT_DIR/.harness/AGENTS.md" 2>/dev/null || true
 
-# Add .harness/ to .gitignore
-if ! grep -qxF '.harness/' "$PROJECT_DIR/.gitignore" 2>/dev/null; then
-  echo '.harness/' >> "$PROJECT_DIR/.gitignore"
-  log_info "Added .harness/ to .gitignore"
-fi
+for entry in '.harness/' 'progress.txt'; do
+  grep -qxF "$entry" "$PROJECT_DIR/.gitignore" 2>/dev/null || echo "$entry" >> "$PROJECT_DIR/.gitignore"
+done
 
-# Collect project context (limited)
-if command -v tree > /dev/null 2>&1; then
-  TREE_OUTPUT=$(cd "$PROJECT_DIR" && tree -L 2 --dirsfirst -I node_modules 2>/dev/null | head -100)
-else
-  TREE_OUTPUT=$(cd "$PROJECT_DIR" && find . -maxdepth 2 -not -path './node_modules/*' -not -path './.git/*' | sort | head -100)
-fi
-if [[ $(echo "$TREE_OUTPUT" | wc -l) -ge 100 ]]; then
-  TREE_OUTPUT="$TREE_OUTPUT
-... (truncated at 100 lines)"
-fi
-
-PKG_SUMMARY=$(jq '{name, scripts, dependencies, devDependencies}' "$PROJECT_DIR/package.json" 2>/dev/null || echo '{}')
-
-TSCONFIG_SUMMARY=""
-if [[ -f "$PROJECT_DIR/tsconfig.json" ]]; then
-  TSCONFIG_SUMMARY=$(jq '.compilerOptions' "$PROJECT_DIR/tsconfig.json" 2>/dev/null || echo '{}')
-else
-  TSCONFIG_SUMMARY="(tsconfig.json not found)"
-fi
-
-# Build prompt
-PROMPT="You are a software architect. Analyze this TypeScript/Node/React project
-and decompose the following feature into implementable tasks.
-
-Feature: $DESCRIPTION
-$ISSUE_CONTEXT
-
-Project context:
-- Directory: $PROJECT_DIR
-- package.json (summary):
-$PKG_SUMMARY
-- tsconfig.json (compilerOptions):
-$TSCONFIG_SUMMARY
-- Structure:
-$TREE_OUTPUT
-
-IMPORTANT — Before decomposing, search for existing spec files in the project:
-- Check: specs/, .kiro/specs/, docs/specs/ directories
-- If you find requirements.md, design.md, or similar spec files related to this feature,
-  READ THEM and use them as the primary source for requirements and acceptance criteria.
-- The specs are the source of truth — your job is to decompose them into harness-sized tasks,
-  not to reinvent the requirements.
-- If no specs exist, decompose from the feature description alone.
-
-Decomposition rules:
-1. Each task must be completable in a 15-20 minute session
-2. Each task must have testable acceptance criteria (from specs if available)
-3. Resolve dependencies topologically: dependent tasks come after their dependencies
-4. Foundation first (types, config, utils), then features, then E2E tests
-5. Include suggested_files (reference only — agent can create additional files)
-6. Estimate total cost based on number of tasks (~\$0.50 per task)
-7. Group related small changes into cohesive tasks — do NOT create one task per file change
-
-Generate a file called prd.json in $PROJECT_DIR following EXACTLY this schema:
-
-{
-  \"project\": \"$PROJECT\",
-  \"feature\": \"feature-name\",
-  \"feature_slug\": \"feature-name-slug\",
-  \"description\": \"full description\",
-  \"created\": \"$(date -Iseconds)\",
-  \"estimated_cost\": \"\$X-Y\",
-  \"status\": \"pending_approval\",
-  \"tasks\": [
-    {
-      \"id\": \"TASK-001\",
-      \"priority\": 1,
-      \"title\": \"short title\",
-      \"description\": \"detailed description\",
-      \"acceptance_criteria\": [\"testable criterion\"],
-      \"suggested_files\": [\"src/path/to/file.ts\"],
-      \"depends_on\": [],
-      \"status\": \"pending\",
-      \"retries\": 0,
-      \"blocked_reason\": \"\",
-      \"timeout_minutes\": 20
-    }
-  ]
-}
-
-Required fields - top-level: project, feature, feature_slug, status, tasks.
-Required fields - each task: id, priority, title, description, acceptance_criteria, status.
-
-IMPORTANT:
-- Priority is a tiebreaker — depends_on takes precedence in ordering
-- Don't create tasks for basic setup (project already has package.json)
-- Focus on what is NEW for this feature
-- timeout_minutes default: 20 (increase for tasks involving many files)
-- Write the prd.json file to: $PROJECT_DIR/prd.json"
-
-# Run Claude Code (read-only — no Bash) — cd to project dir
-log_info "Generating plan with Claude Code..."
-CLAUDE_MODEL="${HARNESS_CLAUDE_MODEL:-claude-sonnet-4-6}"
-
-if ! (cd "$PROJECT_DIR" && echo "$PROMPT" | claude -p \
-  --model "$CLAUDE_MODEL" \
-  --allowedTools "Read Glob Grep Write") > "$LOGS_DIR/plan-${PROJECT}.log" 2>&1; then
-  log_error "Claude Code failed during planning. See: $LOGS_DIR/plan-${PROJECT}.log"
+# ========================================================================
+# Generate specs (research + spec in one pipeline)
+# ========================================================================
+log_info "Generating specs via Spec Kit pipeline..."
+SPEC_DIR=$("$SCRIPT_DIR/harness-spec.sh" "$PROJECT" "$DESCRIPTION" $ISSUE_FLAG $EXTRA_FLAGS) || true
+if [[ -z "$SPEC_DIR" || ! -f "$SPEC_DIR/tasks.md" ]]; then
+  log_error "Spec generation failed"
+  notify "Harness plan falhou ($PROJECT): spec generation failed"
   exit $EXIT_CLAUDE_FAIL
 fi
 
-# Validate generated prd.json
-PRD_PATH="$PROJECT_DIR/prd.json"
-if [[ ! -f "$PRD_PATH" ]]; then
-  log_error "Claude Code did not generate prd.json"
-  exit $EXIT_CLAUDE_FAIL
+# Validate
+for file in spec.md plan.md tasks.md; do
+  if [[ ! -f "$SPEC_DIR/$file" ]]; then
+    log_error "Missing $file in $SPEC_DIR"
+    exit 3
+  fi
+done
+
+TASK_COUNT=$(grep -c '^- \[ \] T[0-9]' "$SPEC_DIR/tasks.md" 2>/dev/null) || TASK_COUNT=0
+if [[ "$TASK_COUNT" -eq 0 ]]; then
+  log_error "tasks.md has no parseable tasks"
+  exit 3
 fi
 
-validate_prd_schema "$PRD_PATH"
+# Save spec path for show-plan and run
+echo "$SPEC_DIR" > "$PROJECT_DIR/.harness/spec-dir"
 
-TASK_COUNT=$(jq '.tasks | length' "$PRD_PATH")
-COST=$(jq -r '.estimated_cost // "unknown"' "$PRD_PATH")
-log_ok "Plan generated: $TASK_COUNT tasks, estimated cost: $COST"
+# ========================================================================
+# Spec Review Gate — send summary and wait for approval
+# ========================================================================
+APPROVAL_FILE="$PROJECT_DIR/.harness/approved"
+rm -f "$APPROVAL_FILE"
+
+if [[ "$AUTO_APPROVE" == true ]]; then
+  log_info "Auto-approve enabled — skipping review gate"
+  touch "$APPROVAL_FILE"
+else
+  # Build summary for Telegram
+  SPEC_NAME=$(basename "$SPEC_DIR")
+
+  # Extract key decisions from plan.md (first 'Decisions for Review' section or first 30 lines)
+  DECISIONS=""
+  if grep -q "Decisions for Review" "$SPEC_DIR/plan.md" 2>/dev/null; then
+    DECISIONS=$(sed -n '/## Decisions for Review/,/^## /p' "$SPEC_DIR/plan.md" | head -20 | tail -n +2)
+  fi
+
+  # Extract risks from research.md
+  RISKS=""
+  if [[ -f "$SPEC_DIR/research.md" ]] && grep -q "Risks" "$SPEC_DIR/research.md" 2>/dev/null; then
+    RISKS=$(sed -n '/## Risks/,/^## /p' "$SPEC_DIR/research.md" | head -15 | tail -n +2)
+  fi
+
+  # Build plan summary (first 25 lines of plan.md)
+  PLAN_PREVIEW=$(head -25 "$SPEC_DIR/plan.md")
+
+  SUMMARY="📋 *Harness Plan Ready* — $PROJECT
+
+*Feature:* $DESCRIPTION
+*Spec:* $SPEC_NAME/
+*Tasks:* $TASK_COUNT"
+
+  if [[ -n "$DECISIONS" ]]; then
+    SUMMARY="$SUMMARY
+
+⚠️ *Decisões que precisam da sua revisão:*
+$DECISIONS"
+  fi
+
+  if [[ -n "$RISKS" ]]; then
+    SUMMARY="$SUMMARY
+
+🔍 *Riscos identificados:*
+$RISKS"
+  fi
+
+  SUMMARY="$SUMMARY
+
+📄 *Plan preview:*
+$PLAN_PREVIEW
+
+---
+Para aprovar: \`harness approve $PROJECT\`
+Para ver plan completo: \`harness show-plan $PROJECT\`
+Para rejeitar: \`harness reject $PROJECT\`"
+
+  notify "$SUMMARY"
+  log_info "Plan sent for review. Waiting for approval..."
+  log_info "  Approve: touch $APPROVAL_FILE"
+  log_info "  Or run:  harness-run.sh $PROJECT"
+  log_info "  Timeout: ${APPROVAL_TIMEOUT}s"
+
+  # Wait for approval file
+  ELAPSED=0
+  POLL_INTERVAL=10
+  while [[ ! -f "$APPROVAL_FILE" && $ELAPSED -lt $APPROVAL_TIMEOUT ]]; do
+    sleep $POLL_INTERVAL
+    ELAPSED=$((ELAPSED + POLL_INTERVAL))
+
+    # Check for rejection
+    if [[ -f "$PROJECT_DIR/.harness/rejected" ]]; then
+      log_warn "Plan rejected by user"
+      notify "Plan rejeitado ($PROJECT). Specs em $SPEC_NAME/ para ajuste manual."
+      rm -f "$PROJECT_DIR/.harness/rejected"
+      exit 0
+    fi
+  done
+
+  if [[ ! -f "$APPROVAL_FILE" ]]; then
+    log_warn "Approval timeout (${APPROVAL_TIMEOUT}s). Plan saved but not executed."
+    notify "⏰ Harness plan timeout ($PROJECT). Plan salvo em $SPEC_NAME/. Execute manualmente: harness-run.sh $PROJECT"
+    exit 0
+  fi
+
+  log_ok "Plan approved!"
+  notify "✅ Plan aprovado ($PROJECT). Iniciando implementação..."
+fi
+
+log_ok "Plan ready: $TASK_COUNT tasks in $(basename "$SPEC_DIR")/"

@@ -87,6 +87,7 @@ install_openclaw() {
     fi
   done
 
+  echo -e "${YELLOW}NOTE: only agent *.md files were copied. Workspace skills are synced into this repo via migrate.sh from the live host.${NC}"
   echo -e "${GREEN}OpenClaw assets installed.${NC}"
 }
 

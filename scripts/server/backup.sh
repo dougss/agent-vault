@@ -36,18 +36,14 @@ log "=== Início do backup $TIMESTAMP ==="
 
 # 1. PostgreSQL dump
 log "Dump do PostgreSQL..."
-if docker ps --format '{{.Names}}' 2>/dev/null | grep -qi postgres; then
-    POSTGRES_CONTAINER=$(docker ps --format '{{.Names}}' | grep -i postgres | head -1)
-    PG_USER=$(docker exec "$POSTGRES_CONTAINER" printenv POSTGRES_USER 2>/dev/null || echo "postgres")
-    docker exec "$POSTGRES_CONTAINER" pg_dumpall -U "$PG_USER" > "$WORK_DIR/postgres_dump.sql" 2>/dev/null \
-        && ok "PostgreSQL dump via Docker concluído (user: $PG_USER)" \
+DOCKER_BIN="/usr/local/bin/docker"
+if "$DOCKER_BIN" ps --format '{{.Names}}' 2>/dev/null | grep -qi postgres; then
+    POSTGRES_CONTAINER=$("$DOCKER_BIN" ps --format '{{.Names}}' | grep -i postgres | head -1)
+    "$DOCKER_BIN" exec "$POSTGRES_CONTAINER" pg_dumpall -U admin > "$WORK_DIR/postgres_dump.sql" 2>/dev/null \
+        && ok "PostgreSQL dump via Docker concluído" \
         || err "Falha no dump do PostgreSQL via Docker"
-elif command -v pg_dumpall &>/dev/null; then
-    pg_dumpall -U postgres > "$WORK_DIR/postgres_dump.sql" 2>/dev/null \
-        && ok "PostgreSQL dump concluído" \
-        || err "Falha no dump do PostgreSQL"
 else
-    err "PostgreSQL não disponível, pulando dump"
+    err "PostgreSQL não disponível (container não encontrado), pulando dump"
 fi
 
 # 2. Redis snapshot

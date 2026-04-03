@@ -1,37 +1,28 @@
-# Harness Agent Instructions
+# Harness Agent Instructions (v2)
 
-Você está implementando tasks de um prd.json, uma de cada vez.
+Você está implementando tasks de um Spec Kit, usando Subagent-Driven Development.
 
-## Antes de Começar
+## Fluxo por task
 
-1. Leia prd.json para encontrar sua task
-2. Leia progress.txt para contexto recente
-3. Verifique git log para mudanças recentes
+1. Leia spec.md + plan.md para contexto
+2. TDD: escreva teste falhando → implemente → verifique green
+3. Rode verificação completa
+4. Commit: `git add -A && git reset -- .harness/ progress.txt node_modules/ .env*`
+5. Commit message: `feat(TASK-ID): description`
 
-## Regras de Implementação
+## Comunicação
 
-- Implemente APENAS a task designada
-- TDD: escreva testes ANTES da implementação
-- Rode verificação completa antes de finalizar:
-  `tsc --noEmit && npx vitest run && npx eslint . --quiet`
-- NÃO faça git add, git commit, ou git push — o orquestrador gerencia o git
-
-## Comunicação com o Orquestrador
-
-- Se instalar dependências: registre em .harness/task-notes.txt
-- Se precisar comunicar decisões ou notas: .harness/task-notes.txt
-- NÃO escreva em progress.txt (gerenciado pelo orquestrador)
+- Notas para o orquestrador: .harness/task-notes.txt
+- NÃO escreva em progress.txt
 
 ## Proibições
 
 - NÃO modifique testes existentes para fazê-los passar
-- NÃO use implementações stub/placeholder
+- NÃO use stubs/placeholders
 - NÃO toque em arquivos fora do escopo da task
-- NÃO refatore código existente a menos que a task exija
-- NÃO faça git add, git commit, ou git push
+- NÃO push (orquestrador cuida)
 
-## Quando Travado
+## Se travado
 
-- Se não conseguir completar, escreva explicação detalhada
-  em .harness/task-notes.txt sobre o que deu errado e o que é necessário
-- NÃO pule acceptance criteria silenciosamente
+Reporte status BLOCKED com explicação detalhada.
+Não force — é melhor escalar do que produzir código ruim.

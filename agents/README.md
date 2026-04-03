@@ -1,6 +1,6 @@
 # Agents
 
-Definicoes completas de 12 agentes de IA. Cada agente e uma pasta com arquivos Markdown que definem sua personalidade, instrucoes e capacidades.
+Definicoes completas de 13 agentes de IA. Cada agente e uma pasta com arquivos Markdown que definem sua personalidade, instrucoes e capacidades.
 
 ## Arquivos padrao por agente
 
@@ -40,3 +40,4 @@ Estes arquivos vem dos workspaces do OpenClaw (`~/.openclaw/workspace/` e `~/.op
 - `video-gen/` — Produtor de video
 - `task-orchestrator/` — Gerente de tarefas
 - `harness-engineer/` — Engenheiro de coding autonomo
+- `tiktok-coach/` — TikTok Coach (Liz)

@@ -25,7 +25,13 @@ Este é um **Mac Mini (Apple Silicon)** rodando **macOS Tahoe (26)**, configurad
   - LaunchAgents: ai.openclaw.gateway + ai.openclaw.node (auto-start)
   - **Voice (Telegram)**: STT via whisper-cpp local + TTS via edge-tts (pt-BR-FranciscaNeural)
   - Docs de voz: `~/server/docs/openclaw-voice.md`
-  - **11 agentes** (main + 10 especialistas) — ver seção "OpenClaw — Agentes" abaixo
+  - **12 agentes** (main + 11 especialistas) — ver seção "OpenClaw — Agentes" abaixo
+- **Harness v3** — Orquestrador inteligente de features (TypeScript)
+  - Código: `~/server/apps/harness/`
+  - CLI: `harness start/status/logs/stop/approve/reject/show-plan`
+  - DB: PostgreSQL `harness` (127.0.0.1:5432, user: harness)
+  - Usa Claude Code CLI (`claude -p`) como cérebro + GitHub Spec Kit para specs
+  - Fluxo: Discovery → Spec → Plan → Approve → Implement (TDD) → Review → PR
 - **whisper-cpp 1.8.3** — STT local (Metal acceleration)
   - CLI: `/opt/homebrew/bin/whisper-cli`
   - Modelo: `~/.openclaw/models/whisper/ggml-medium.bin` (1.4GB, multilingual)
@@ -79,6 +85,28 @@ Este é um **Mac Mini (Apple Silicon)** rodando **macOS Tahoe (26)**, configurad
 - Porta: 3001 (Next.js 16 production)
 - IMPORTANTE: `OPENCLAW_LOG_LEVEL=silent` no env (evita plugin stdout poluir JSON)
 
+**Nexus v2** — Skill-driven workflows para Claude Code (MCP server + CLI, zero runtime)
+
+- Código: `~/server/apps/nexus/`
+- Stack: Markdown skills + Node.js MCP stdio server + Node.js CLI (zero deps, sem Docker, sem DB)
+- MCP stdio (Claude Code local): `~/.claude.json` → `bin/nexus-mcp`
+- MCP HTTP/SSE (Cursor remoto): `http://192.168.1.100:3005/sse` — LaunchAgent `dev.nexus.mcp`
+- Tools: `nexus_list` (lista skills) + `nexus_get(name)` (carrega SKILL.md)
+- 13 skills em `skills/<name>/SKILL.md` — lidas do disco em cada chamada
+- CLI: `node bin/nexus validate` / `node bin/nexus graph`
+- Instrução global em `~/.claude/CLAUDE.md`: chama nexus_list + nexus_get("using-nexus") em toda sessão
+
+**Claw Engine** — Model-agnostic coding agent factory (DAG orchestrator)
+
+- Acesso: http://192.168.1.100:3004
+- Código: `~/server/apps/claw-engine/`
+- Stack: Node.js + TypeScript + Fastify + BullMQ + Drizzle ORM + React + Vite + @xyflow/react
+- DB: PostgreSQL `claw_engine` (127.0.0.1:5432, user: claw_engine)
+- LaunchAgent: `dev.claw-engine.server` (auto-start, KeepAlive)
+- Logs: `~/server/logs/claw-engine.log`
+- Porta: 3004 (Fastify HTTP + SSE + React dashboard)
+- CLI: `cd ~/server/apps/claw-engine && npm run claw -- <command>`
+
 ## Estrutura de diretórios
 
 ```
@@ -117,7 +145,8 @@ Este é um **Mac Mini (Apple Silicon)** rodando **macOS Tahoe (26)**, configurad
 │   ├── health-coach/        # Health Coach
 │   ├── finance-advisor/     # Finance Advisor
 │   ├── english-tutor/       # Kai — English Tutor
-│   └── harness-engineer/   # Harness Engineer (coding autônomo)
+│   ├── harness-engineer/   # Harness Engineer (coding autônomo)
+│   └── tiktok-coach/       # TikTok Coach (Liz)
 ├── agents/                  # Estado e sessões de cada agente
 ├── credentials/             # Tokens de channels (chmod 700)
 ├── secrets/.env             # API keys (chmod 600) — DASHSCOPE_API_KEY, LIFE_OS_DB_PASS, FINAI_USER_ID
@@ -127,8 +156,8 @@ Este é um **Mac Mini (Apple Silicon)** rodando **macOS Tahoe (26)**, configurad
 
 ## OpenClaw — Agentes Especialistas
 
-MadClaw (main) orquestra 11 agentes especialistas via roteamento híbrido (automático + manual).
-Workspaces isolados em `~/.openclaw/workspaces/<id>/`. Bots dedicados: @vita_claw_bot (health), @KaiEnglishClawBot (english), Harness (Slack).
+MadClaw (main) orquestra 12 agentes especialistas via roteamento híbrido (automático + manual).
+Workspaces isolados em `~/.openclaw/workspaces/<id>/`. Bots dedicados: @vita_claw_bot (health), @KaiEnglishClawBot (english), @LizTikTokBot (tiktok), Harness (Slack).
 
 | ID                | Nome                    | Modelo                   | Função                                                                  |
 | ----------------- | ----------------------- | ------------------------ | ----------------------------------------------------------------------- |
@@ -144,6 +173,7 @@ Workspaces isolados em `~/.openclaw/workspaces/<id>/`. Bots dedicados: @vita_cla
 | finance-advisor   | Finance Advisor         | bailian/qwen3.5-plus     | Consultor financeiro: gastos, investimentos, patrimônio, metas, cartões |
 | english-tutor     | Kai — English Tutor     | bailian/qwen3.5-plus     | Professor de inglês pessoal — bot dedicado @KaiEnglishClawBot           |
 | harness-engineer  | Harness Engineer        | bailian/qwen3-coder-plus | Implementação autônoma via Slack (DM dedicado, sem MadClaw)             |
+| tiktok-coach      | TikTok Coach (Liz)      | bailian/qwen3.5-plus     | Coaching de vendas TikTok Shop — bot dedicado @LizTikTokBot             |
 
 **Comandos úteis:**
 
@@ -223,6 +253,9 @@ Container `postgres` em `127.0.0.1:5432` — volume: `~/server/data/postgres`
 | `main` | `admin` | Database padrão do servidor (uso geral) |
 | `life_os` | `life_os` | Life OS + VitaClaw health tracking (extensões: pgvector, uuid-ossp) |
 | `miniflux` | `miniflux` | Miniflux RSS reader (extensão: hstore) |
+| `harness` | `harness` | Harness v3 orchestrator (extensão: uuid-ossp) |
+| `tiktok_coach` | `tiktok_coach` | TikTok Coach (métricas, vendas, planos, learnings) |
+| `claw_engine` | `claw_engine` | Claw Engine DAG orchestrator (extensão: uuid-ossp) |
 
 **Users:**
 | User | Permissões | Usado por |
@@ -230,6 +263,9 @@ Container `postgres` em `127.0.0.1:5432` — volume: `~/server/data/postgres`
 | `admin` | Superuser | Administração geral, database `main` |
 | `life_os` | LOGIN, CREATEDB | Life OS backend + VitaClaw health-db scripts |
 | `miniflux` | LOGIN, CREATEDB | Miniflux RSS reader |
+| `harness` | LOGIN | Harness v3 orchestrator |
+| `tiktok_coach` | LOGIN | TikTok Coach agent DB scripts |
+| `claw_engine` | LOGIN | Claw Engine DAG orchestrator |
 
 ### Redis Compartilhado (redis:7-alpine)
 
@@ -252,8 +288,12 @@ Container `redis` em `127.0.0.1:6379` — volume: `~/server/data/redis`
 | 3001  | 0.0.0.0   | ClawPort Dashboard           | ClawPort        |
 | 8081  | 0.0.0.0   | Miniflux RSS reader          | Infra           |
 | 37777 | 0.0.0.0   | Claude-Mem Worker            | OpenClaw Plugin |
+| 3002  | —         | LIVRE                        | —               |
+| 3003  | 0.0.0.0   | Excalidraw Canvas Server     | MCP Excalidraw  |
+| 3004  | 0.0.0.0   | Claw Engine API + Dashboard  | Claw Engine     |
+| 3005  | 0.0.0.0   | Nexus MCP HTTP/SSE           | Nexus           |
 
-**Próximas portas disponíveis:** 3002+, 8001+, 8082+
+**Próximas portas disponíveis:** 3002, 3006+, 8001+, 8082+
 
 ### Redes Docker
 
@@ -305,15 +345,19 @@ openclaw security audit --deep
 openclaw config get tools.elevated
 openclaw gateway restart
 
-# Harness Engineering
-~/server/scripts/harness/harness-plan.sh <projeto> "<descrição>"   # Gerar plano
-~/server/scripts/harness/harness-show-plan.sh <projeto>            # Mostrar plano formatado
-~/server/scripts/harness/harness-loop.sh --preflight <projeto>     # Health check
-~/server/scripts/harness/harness-loop.sh --run <projeto>           # Executar (via nohup)
-~/server/scripts/harness/harness-status.sh [<projeto>]             # Status
-~/server/scripts/harness/harness-stop.sh <projeto>                 # Parar
-~/server/scripts/harness/harness-resume.sh <projeto>               # Retomar
-~/server/scripts/harness/harness-review.sh <projeto> <pr-number>   # Review automático
+# Harness Engineering v2.1 (Research + Spec Kit + Superpowers)
+~/server/scripts/harness/harness-plan.sh <proj> "<desc>"           # Research + specs + approval gate
+~/server/scripts/harness/harness-plan.sh <proj> "<desc>" --auto-approve  # Sem esperar aprovação
+~/server/scripts/harness/harness-spec.sh <proj> "<desc>"           # Só gerar specs (com research)
+~/server/scripts/harness/harness-spec.sh <proj> "<desc>" --skip-research  # Specs sem research
+~/server/scripts/harness/harness-show-plan.sh <proj>               # Mostrar tasks para aprovação
+~/server/scripts/harness/harness-approve.sh <proj>                 # Aprovar plan pendente
+~/server/scripts/harness/harness-reject.sh <proj>                  # Rejeitar plan pendente
+~/server/scripts/harness/harness-run.sh <proj>                     # Executar (via nohup)
+~/server/scripts/harness/harness-status.sh [<proj>]                # Status
+~/server/scripts/harness/harness-stop.sh <proj>                    # Parar
+~/server/scripts/harness/harness-resume.sh <proj>                  # Retomar
+~/server/scripts/harness/harness-review.sh <proj> <pr-number>      # Review automático
 
 # Nginx reload
 docker exec nginx-proxy nginx -s reload

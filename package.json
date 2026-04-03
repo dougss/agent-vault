@@ -1,0 +1,13 @@
+{
+  "name": "agent-vault",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Centralized agent assets (Markdown, scripts) — CI uses npm only for lockfile and audit",
+  "scripts": {
+    "validate": "bash scripts/utilities/validate.sh",
+    "ci": "bash scripts/utilities/validate.sh"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

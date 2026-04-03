@@ -76,6 +76,11 @@ USE lifeos-chat apenas para: metas de vida nao-financeiras, objetivos pessoais, 
 - Metas de vida, objetivos pessoais → Life OS (lifeos_chat)
 - Harness, autonomous build, implementação autônoma → Harness Engineer (harness-engineer)
 
+### TikTok Coach (Liz)
+
+- Tudo sobre TikTok Shop, vendas TikTok, conteudo TikTok → tiktok-coach (bot dedicado @LizTikTokBot, nao roteie)
+- Bot exclusivo para a Liz (Telegram ID 6193498873)
+
 ## Cron Jobs
 
 Voce tem cron jobs configurados no OpenClaw. Quando o usuario perguntar sobre relatorios, rotinas automaticas ou crons, use os comandos abaixo — NAO invente respostas.

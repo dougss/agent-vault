@@ -6,7 +6,7 @@
       "name": "Relatorio Matinal",
       "enabled": true,
       "createdAtMs": 1772039358071,
-      "updatedAtMs": 1774348257680,
+      "updatedAtMs": 1775125824650,
       "schedule": {
         "kind": "cron",
         "expr": "30 7 * * *",
@@ -25,11 +25,11 @@
         "to": "${TELEGRAM_CHAT_ID}"
       },
       "state": {
-        "nextRunAtMs": 1774434600000,
-        "lastRunAtMs": 1774348200013,
+        "nextRunAtMs": 1775212200000,
+        "lastRunAtMs": 1775125800025,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 57667,
+        "lastDurationMs": 24625,
         "lastDeliveryStatus": "delivered",
         "consecutiveErrors": 0,
         "lastDelivered": true
@@ -73,7 +73,7 @@
       "name": "API Spending Semanal",
       "enabled": true,
       "createdAtMs": 1772151087421,
-      "updatedAtMs": 1774220833259,
+      "updatedAtMs": 1774825247628,
       "schedule": {
         "kind": "cron",
         "expr": "0 20 * * 0",
@@ -92,11 +92,11 @@
         "to": "${TELEGRAM_CHAT_ID}"
       },
       "state": {
-        "nextRunAtMs": 1774825200000,
-        "lastRunAtMs": 1774220400014,
+        "nextRunAtMs": 1775430000000,
+        "lastRunAtMs": 1774825200009,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 433245,
+        "lastDurationMs": 47619,
         "lastDeliveryStatus": "delivered",
         "consecutiveErrors": 0,
         "lastDelivered": true
@@ -108,7 +108,7 @@
       "name": "Daily Review 20:30",
       "enabled": true,
       "createdAtMs": 1772911377539,
-      "updatedAtMs": 1774308658278,
+      "updatedAtMs": 1775172771174,
       "schedule": {
         "kind": "cron",
         "expr": "30 20 * * *",
@@ -128,11 +128,11 @@
         "accountId": "health"
       },
       "state": {
-        "nextRunAtMs": 1774395000000,
-        "lastRunAtMs": 1774308600014,
+        "nextRunAtMs": 1775259000000,
+        "lastRunAtMs": 1775172600010,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 58264,
+        "lastDurationMs": 171164,
         "lastDeliveryStatus": "delivered",
         "consecutiveErrors": 0,
         "lastDelivered": true
@@ -143,7 +143,7 @@
       "name": "AI Daily Digest",
       "enabled": true,
       "createdAtMs": 1773535005594,
-      "updatedAtMs": 1774350069477,
+      "updatedAtMs": 1775127654938,
       "schedule": {
         "kind": "cron",
         "expr": "0 8 * * *"
@@ -161,11 +161,11 @@
         "to": "${TELEGRAM_CHAT_ID}"
       },
       "state": {
-        "nextRunAtMs": 1774436400000,
-        "lastRunAtMs": 1774350000014,
+        "nextRunAtMs": 1775214000000,
+        "lastRunAtMs": 1775127600012,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 69463,
+        "lastDurationMs": 54926,
         "lastDeliveryStatus": "delivered",
         "consecutiveErrors": 0,
         "lastDelivered": true
@@ -176,7 +176,7 @@
       "name": "AI Daily Digest 12h",
       "enabled": true,
       "createdAtMs": 1773578023591,
-      "updatedAtMs": 1774364487673,
+      "updatedAtMs": 1775142099479,
       "schedule": {
         "kind": "cron",
         "expr": "0 12 * * *",
@@ -195,11 +195,11 @@
         "to": "${TELEGRAM_CHAT_ID}"
       },
       "state": {
-        "nextRunAtMs": 1774450800000,
-        "lastRunAtMs": 1774364400011,
+        "nextRunAtMs": 1775228400000,
+        "lastRunAtMs": 1775142000013,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 87662,
+        "lastDurationMs": 99466,
         "lastDelivered": true,
         "lastDeliveryStatus": "delivered",
         "consecutiveErrors": 0
@@ -210,7 +210,7 @@
       "name": "AI Daily Digest 18h",
       "enabled": true,
       "createdAtMs": 1773578024358,
-      "updatedAtMs": 1774386112968,
+      "updatedAtMs": 1775163658031,
       "schedule": {
         "kind": "cron",
         "expr": "0 18 * * *",
@@ -229,11 +229,11 @@
         "to": "${TELEGRAM_CHAT_ID}"
       },
       "state": {
-        "nextRunAtMs": 1774472400000,
-        "lastRunAtMs": 1774386000015,
+        "nextRunAtMs": 1775250000000,
+        "lastRunAtMs": 1775163600008,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 112953,
+        "lastDurationMs": 58023,
         "lastDelivered": true,
         "lastDeliveryStatus": "delivered",
         "consecutiveErrors": 0
@@ -245,7 +245,7 @@
       "name": "English Wake-up Ping",
       "enabled": true,
       "createdAtMs": 1773601874912,
-      "updatedAtMs": 1774344634336,
+      "updatedAtMs": 1775122223842,
       "schedule": {
         "kind": "cron",
         "expr": "30 6 * * 1-5",
@@ -266,11 +266,11 @@
         "accountId": "english"
       },
       "state": {
-        "nextRunAtMs": 1774431000000,
-        "lastRunAtMs": 1774344600008,
+        "nextRunAtMs": 1775208600000,
+        "lastRunAtMs": 1775122200010,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 34328,
+        "lastDurationMs": 23832,
         "lastDeliveryStatus": "delivered",
         "consecutiveErrors": 0,
         "lastDelivered": true
@@ -282,7 +282,7 @@
       "name": "English Micro-dose Lunch",
       "enabled": true,
       "createdAtMs": 1773601887219,
-      "updatedAtMs": 1774366249329,
+      "updatedAtMs": 1775143818471,
       "schedule": {
         "kind": "cron",
         "expr": "30 12 * * 1-5",
@@ -303,11 +303,11 @@
         "accountId": "english"
       },
       "state": {
-        "nextRunAtMs": 1774452600000,
-        "lastRunAtMs": 1774366200014,
+        "nextRunAtMs": 1775230200000,
+        "lastRunAtMs": 1775143800010,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 49315,
+        "lastDurationMs": 18461,
         "lastDeliveryStatus": "delivered",
         "consecutiveErrors": 0,
         "lastDelivered": true
@@ -319,7 +319,7 @@
       "name": "English Micro-dose Evening",
       "enabled": true,
       "createdAtMs": 1773601893356,
-      "updatedAtMs": 1774386131610,
+      "updatedAtMs": 1775163674689,
       "schedule": {
         "kind": "cron",
         "expr": "0 18 * * 1-5",
@@ -340,11 +340,11 @@
         "accountId": "english"
       },
       "state": {
-        "nextRunAtMs": 1774472400000,
-        "lastRunAtMs": 1774386112968,
+        "nextRunAtMs": 1775250000000,
+        "lastRunAtMs": 1775163658031,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 18642,
+        "lastDurationMs": 16658,
         "lastDeliveryStatus": "delivered",
         "consecutiveErrors": 0,
         "lastDelivered": true
@@ -356,7 +356,7 @@
       "name": "English Daily Vocab",
       "enabled": true,
       "createdAtMs": 1773601896210,
-      "updatedAtMs": 1774310520069,
+      "updatedAtMs": 1775174424736,
       "schedule": {
         "kind": "cron",
         "expr": "0 21 * * *",
@@ -377,15 +377,14 @@
         "accountId": "english"
       },
       "state": {
-        "nextRunAtMs": 1774396800000,
-        "lastRunAtMs": 1774310400014,
-        "lastRunStatus": "error",
-        "lastStatus": "error",
-        "lastDurationMs": 120055,
-        "lastDeliveryStatus": "unknown",
-        "consecutiveErrors": 6,
-        "lastErrorReason": "timeout",
-        "lastError": "cron: job execution timed out"
+        "nextRunAtMs": 1775260800000,
+        "lastRunAtMs": 1775174400010,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 24726,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0,
+        "lastDelivered": true
       }
     },
     {
@@ -394,7 +393,7 @@
       "name": "English Weekend Casual",
       "enabled": true,
       "createdAtMs": 1773601899403,
-      "updatedAtMs": 1774098015106,
+      "updatedAtMs": 1774702825017,
       "schedule": {
         "kind": "cron",
         "expr": "0 10 * * 6",
@@ -415,14 +414,122 @@
         "accountId": "english"
       },
       "state": {
-        "nextRunAtMs": 1774702800000,
-        "lastRunAtMs": 1774098000011,
+        "nextRunAtMs": 1775307600000,
+        "lastRunAtMs": 1774702800017,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 15095,
+        "lastDurationMs": 25000,
         "lastDelivered": true,
         "lastDeliveryStatus": "delivered",
         "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "4b114b45-f3d6-4019-8563-8119e6b5092e",
+      "agentId": "tiktok-coach",
+      "name": "TikTok Morning Brief",
+      "enabled": true,
+      "createdAtMs": 1774654306060,
+      "updatedAtMs": 1775127675737,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "America/Sao_Paulo"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Voce esta executando o MORNING BRIEF das 8h. Execute os passos:\n1. Leia SOUL.md e USER.md\n2. Execute: python3 ~/.openclaw/workspaces/tiktok-coach/skills/tiktok-db/scripts/manage_plan.py '{\"action\": \"get_today_tasks\"}'\n3. Execute: python3 ~/.openclaw/workspaces/tiktok-coach/skills/tiktok-db/scripts/query_performance.py '{\"type\": \"summary\", \"days\": 1}'\n4. Execute: python3 ~/.openclaw/workspaces/tiktok-coach/skills/tiktok-db/scripts/query_learnings.py '{\"min_confidence\": 0.6}'\n5. Monte o plano do dia com: tarefas da fase atual + metricas de ontem + dica baseada em learnings\n6. Formato: emojis, curto, direto. Sem markdown pesado.",
+        "model": "bailian/qwen3.5-plus"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "${TELEGRAM_CHAT_ID}",
+        "accountId": "tiktok"
+      },
+      "state": {
+        "nextRunAtMs": 1775214000000,
+        "lastRunAtMs": 1775127654938,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 20799,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "f841bc12-7207-4f23-8bc9-f70f874fd7ad",
+      "agentId": "tiktok-coach",
+      "name": "TikTok Evening Check",
+      "enabled": true,
+      "createdAtMs": 1774654315794,
+      "updatedAtMs": 1775174471582,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 21 * * *",
+        "tz": "America/Sao_Paulo"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Voce esta executando o EVENING CHECK das 21h. Execute os passos:\n1. Execute: python3 ~/.openclaw/workspaces/tiktok-coach/skills/tiktok-db/scripts/manage_plan.py '{\"action\": \"get_today_tasks\"}'\n2. Execute: python3 ~/.openclaw/workspaces/tiktok-coach/skills/tiktok-db/scripts/query_performance.py '{\"type\": \"summary\", \"days\": 1}'\n3. Liste tarefas completadas (completed=true) e nao completadas\n4. Mostre vendas do dia se houver\n5. Pergunte se quer registrar metricas de algum video\n6. Formato: recap curto com emojis. Use checkmarks para completadas, X para pendentes.",
+        "model": "bailian/qwen3.5-plus"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "${TELEGRAM_CHAT_ID}",
+        "accountId": "tiktok"
+      },
+      "state": {
+        "nextRunAtMs": 1775260800000,
+        "lastRunAtMs": 1775174424736,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 46846,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "e989979e-d5ae-4971-99cd-cb5b173ed77d",
+      "agentId": "tiktok-coach",
+      "name": "TikTok Weekly Review",
+      "enabled": true,
+      "createdAtMs": 1774654322649,
+      "updatedAtMs": 1774825599220,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 20 * * 0",
+        "tz": "America/Sao_Paulo"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Voce esta executando o WEEKLY REVIEW de domingo. Execute:\n1. Execute: bash ~/.openclaw/workspaces/tiktok-coach/skills/strategy-review/scripts/run_review.sh\n2. Apresente o resultado completo da analise\n3. Se houver novos learnings sugeridos, registre-os no banco com:\n   python3 -c \"import subprocess,json; [subprocess.run(['docker','exec','-e','PGPASSWORD=...',  'postgres','psql','-U','tiktok_coach','-d','tiktok_coach','-c',f\\\"INSERT INTO learnings (category, insight, confidence) VALUES ('{c}','{i}',{conf});\\\"], capture_output=True) for c,i,conf in learnings]\"\n   Ou use docker exec diretamente para cada INSERT\n4. Se houver ajustes no plano, atualize via manage_plan.py\n5. Formato: completo mas organizado. Pode ser mais longo que mensagens normais.",
+        "model": "bailian/qwen3.5-plus"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "${TELEGRAM_CHAT_ID}",
+        "accountId": "tiktok"
+      },
+      "state": {
+        "nextRunAtMs": 1775430000000,
+        "lastRunAtMs": 1774825247628,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 351592,
+        "lastError": "GrammyError: Call to 'sendMessage' failed! (400: Bad Request: message is too long)",
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 1
       }
     }
   ]

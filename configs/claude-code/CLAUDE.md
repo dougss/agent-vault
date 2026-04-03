@@ -4,6 +4,17 @@
 > Para infraestrutura detalhada do servidor, ver `~/server/CLAUDE.md`.
 > Atualizado: 2026-03-18
 
+## Nexus — Workflow Skills (OBRIGATORIO)
+
+<EXTREMELY-IMPORTANT>
+Ao iniciar QUALQUER sessao (incluindo esta), voce DEVE:
+1. Chamar `nexus_list` para descobrir skills disponiveis
+2. Chamar `nexus_get("using-nexus")` para carregar as instrucoes de uso
+
+Se qualquer skill se aplica a tarefa (mesmo 1% de chance), carregue com `nexus_get(name)` ANTES de qualquer acao.
+Isso nao e opcional. Isso nao e negociavel.
+</EXTREMELY-IMPORTANT>
+
 ## Identity & Communication
 
 - Responda sempre em portugues brasileiro, exceto codigo e nomes tecnicos

@@ -1,6 +1,6 @@
 # Agent Vault — Catalogo de Assets
-
-> 172 arquivos | 12 agentes | 27 skills | 18 scripts | 12 cron jobs
+> Snapshot via migrate — 13 agentes | 30 skills | árvore em `skills/`
+> Atualizado: 2026-04-03
 > Atualizado: 2026-03-24
 
 ## Agentes
@@ -19,12 +19,14 @@
 | video-gen         | [agents/video-gen/](agents/video-gen/)                 | Producao de video via Bailian + ffmpeg + edge-tts             | `media`, `personal`               |
 | task-orchestrator | [agents/task-orchestrator/](agents/task-orchestrator/) | Decomposicao e execucao de tarefas complexas                  | `orchestration`, `personal`       |
 | harness-engineer  | [agents/harness-engineer/](agents/harness-engineer/)   | Implementacao autonoma via Slack (coding agent)               | `automation`, `engineering`       |
+| tiktok-coach      | [agents/tiktok-coach/](agents/tiktok-coach/)           | TikTok Shop — metricas, vendas, planos (Liz)                  | `commerce`, `personal`, `telegram` |
 
 ## Skills — Shared
 
 | Skill              | Link                                                                   | Descricao                                      | Usado por                                     |
 | ------------------ | ---------------------------------------------------------------------- | ---------------------------------------------- | --------------------------------------------- |
 | delegation         | [skills/shared/delegation/](skills/shared/delegation/)                 | Workflow para delegar projetos a coding agents | madclaw                                       |
+| cohere-transcribe  | [skills/shared/cohere-transcribe/](skills/shared/cohere-transcribe/)   | Transcricao (Cohere)                           | madclaw                                       |
 | lifeos-chat        | [skills/shared/lifeos-chat/](skills/shared/lifeos-chat/)               | Chat com banco Life OS (queries PostgreSQL)    | madclaw                                       |
 | memory-hygiene     | [skills/shared/memory-hygiene/](skills/shared/memory-hygiene/)         | Manutencao de memoria do agente                | todos                                         |
 | obsidian           | [skills/shared/obsidian/](skills/shared/obsidian/)                     | Leitura/escrita no vault Obsidian              | madclaw, researcher, planner, health, finance |
@@ -80,6 +82,13 @@
 | writing-plans       | [skills/planning/writing-plans/](skills/planning/writing-plans/)             | Escrita de planos de implementacao     | —       |
 | excalidraw          | [skills/planning/excalidraw/](skills/planning/excalidraw/)                   | Geracao de diagramas Excalidraw        | —       |
 | excalidraw-obsidian | [skills/planning/excalidraw-obsidian/](skills/planning/excalidraw-obsidian/) | Integração Excalidraw + Obsidian       | —       |
+
+## Skills — TikTok
+
+| Skill            | Link                                                               | Descricao                         | Scripts   |
+| ---------------- | ------------------------------------------------------------------ | --------------------------------- | --------- |
+| strategy-review  | [skills/tiktok/strategy-review/](skills/tiktok/strategy-review/)   | Revisao de estrategia / conteudo  | ver pasta |
+| tiktok-db        | [skills/tiktok/tiktok-db/](skills/tiktok/tiktok-db/)               | Queries PostgreSQL (tiktok_coach)| ver pasta |
 
 ## Skills — Automation
 

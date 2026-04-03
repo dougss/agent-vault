@@ -45,6 +45,7 @@ sanitize_file() {
   if [[ -f "$file" ]]; then
     # API keys
     sed -i '' 's/sk-proj-[A-Za-z0-9_-]\{20,\}/${OPENAI_API_KEY}/g' "$file" 2>/dev/null || true
+    sed -i '' 's/sk-sp-[A-Za-z0-9_-]\{20,\}/${DASHSCOPE_API_KEY}/g' "$file" 2>/dev/null || true
     sed -i '' 's/AIzaSy[A-Za-z0-9_-]\{30,\}/${GEMINI_API_KEY}/g' "$file" 2>/dev/null || true
     sed -i '' 's/sk-[a-z0-9]\{30,\}/${API_SECRET_KEY}/g' "$file" 2>/dev/null || true
     sed -i '' 's/BSA[A-Za-z0-9]\{20,\}/${BRAVE_API_KEY}/g' "$file" 2>/dev/null || true
@@ -190,6 +191,16 @@ if [[ -d "$skill_dir" ]] && [[ ! -d "$REPO_DIR/skills/shared/skill-creator" ]]; 
   mkdir -p "$REPO_DIR/skills/shared/skill-creator"
   [[ -f "$skill_dir/SKILL.md" ]] && copy_file "$skill_dir/SKILL.md" "$REPO_DIR/skills/shared/skill-creator/SKILL.md"
 fi
+
+# TikTok coach skills
+for skill_name in strategy-review tiktok-db; do
+  skill_dir="$OPENCLAW/workspaces/tiktok-coach/skills/$skill_name"
+  [[ -d "$skill_dir" ]] || continue
+  mkdir -p "$REPO_DIR/skills/tiktok/$skill_name"
+  [[ -f "$skill_dir/SKILL.md" ]] && copy_file "$skill_dir/SKILL.md" "$REPO_DIR/skills/tiktok/$skill_name/SKILL.md"
+  [[ -d "$skill_dir/scripts" ]] && copy_dir "$skill_dir/scripts" "$REPO_DIR/skills/tiktok/$skill_name/scripts"
+  [[ -f "$skill_dir/_meta.json" ]] && copy_file "$skill_dir/_meta.json" "$REPO_DIR/skills/tiktok/$skill_name/_meta.json"
+done
 
 # === 3. Cron Jobs ===
 echo -e "\n[3/6] Migrating cron jobs..."

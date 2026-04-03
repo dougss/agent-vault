@@ -18,7 +18,7 @@ skill-name/
 
 | Categoria     | Skills | Descricao                                         |
 | ------------- | ------ | ------------------------------------------------- |
-| `shared/`     | 9      | Skills genericos usados por multiplos agentes     |
+| `shared/`     | 10+    | Skills genericos usados por multiplos agentes       |
 | `health/`     | 2      | Nutricao (TACO), treino, medidas corporais        |
 | `finance/`    | 4      | Queries de banco, metas, analise de investimentos |
 | `english/`    | 1      | Spaced repetition para vocabulario                |
@@ -26,6 +26,7 @@ skill-name/
 | `research/`   | 3      | Pesquisa web, arXiv, deep research                |
 | `planning/`   | 4      | Brainstorming, planos, diagramas Excalidraw       |
 | `automation/` | 1      | AI Daily Digest (RSS curadoria)                   |
+| `tiktok/`       | 2      | TikTok Shop, métricas, DB (tiktok-coach)          |
 
 ## Como usar em outra ferramenta
 
